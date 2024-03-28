@@ -76,9 +76,10 @@ select  cust_id,cust_name as Customer_Name from Customer where cust_id  NOT IN (
 	-- join display customer who have replace the product
 -- select s.ScId,c.cust_name as Customer_name,p.PName as Product_Name,r.Category as Replace_Product,p.Price,r.RePrice,s.Quantity,(p.Price-r.RePrice)*Quantity as Total_amount  from Customer as c inner join Shopcart as s on c.cust_id=s.cust_id inner join Replace_Product as r on r.Replace_id=s.Replace_id inner join Product as p on p.Prod_id=s.Prod_id;
 	-- disaplay Shopcart details 
-select s.Scid,c.cust_name as Customer_Name,p.Pname as Product_Name,r.Category,p.Price,r.Reprice,s.Quantity,
-(p.Price-r.Reprice)*s.Quantity as Total_amount from Customer as c 
-inner join Shopcart as s on c.cust_id=s.cust_id 
+select o.Order_id,c.cust_name as Customer_Name,p.Pname as Product_Name,r.Category,p.Price,r.Reprice,s.Quantity,
+(p.Price-r.Reprice)*s.Quantity as Total_amount,o.OrderDate from Customer as c 
+inner join Order1 as o on c.cust_id=o.cust_id 
+inner join Shopcart as s on s.ScId=o.ScId
 inner join Product as p on p.Prod_id=s.Prod_id 
 inner join Replace_Product as r on r.Replace_id=s.Replace_id;
 
@@ -87,3 +88,7 @@ select Order_id,cust_name as Customer_Name,Pay_Category from Customer natural jo
 natural join Payment where Pay_Category='Debit Card';
 	-- customer not replace the product
 select ScId,cust_name as Customer_Name from Customer natural join Shopcart where Replace_id is null;
+	-- group with Product Category
+select count(Prod_id),PCategory from Product group by PCategory;
+	-- replace price is greater than 2000
+select * from Replace_Product where RePrice>2000;
