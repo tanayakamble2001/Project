@@ -10,18 +10,23 @@ desc Customer;
 	-- create product table
 create table Product(Prod_id int primary key,PName varchar(20) not null,PCategory varchar(20) not null,
 		Price int not null);
+desc Product;
 	-- create replacement product table
 create table Replace_Product(Replace_id int primary key,Category varchar(20) not null,
 		RePrice int not null);
+desc Replace_Product;
 	-- create shop cart table
 create table Shopcart(ScId int primary key, cust_id int,Prod_id int ,Replace_id int,Quantity int not null,foreign key(Prod_id) references Product(Prod_id),
 					foreign key(cust_id) references Customer(cust_id),foreign key(Replace_id) references Replace_Product(Replace_id));
+desc Shopcart;
 	-- create payment table
 create table Payment(Pay_id int primary key,Pay_Category varchar(20) not null);
+desc Payment;
 	-- create order table
 create table Order1(Order_id int primary key,cust_id int,ScId int,Pay_id int, OrderDate date not null, 
 		foreign key(cust_id) references Customer(cust_id),foreign key(ScId) references Shopcart(ScId),
         foreign key(Pay_id) references Payment(Pay_id));
+desc order1;
         
 	-- insert value in customer table
 insert into Customer(cust_name,cust_address,contact_no,email_id) values('Vihan Kurte','Ratnagiri',9087656743,'vihank06@gmail.com');
@@ -65,6 +70,20 @@ insert into Order1 values(1,2,3,101,'2023-08-18'),(2,4,8,103,'2023-09-01'),(3,9,
         (8,1,9,102,'2024-01-26'),(9,5,1,103,'2024-02-01'),(10,6,10,105,'2024-03-08');
 select * from Order1;
 
+	-- subquery
+select  cust_id,cust_name as Customer_Name from Customer where cust_id  NOT IN (select cust_id from Order1);
 
+	-- join display customer who have replace the product
+-- select s.ScId,c.cust_name as Customer_name,p.PName as Product_Name,r.Category as Replace_Product,p.Price,r.RePrice,s.Quantity,(p.Price-r.RePrice)*Quantity as Total_amount  from Customer as c inner join Shopcart as s on c.cust_id=s.cust_id inner join Replace_Product as r on r.Replace_id=s.Replace_id inner join Product as p on p.Prod_id=s.Prod_id;
+	-- disaplay Shopcart details 
+select s.Scid,c.cust_name as Customer_Name,p.Pname as Product_Name,r.Category,p.Price,r.Reprice,s.Quantity,
+(p.Price-r.Reprice)*s.Quantity as Total_amount from Customer as c 
+inner join Shopcart as s on c.cust_id=s.cust_id 
+inner join Product as p on p.Prod_id=s.Prod_id 
+inner join Replace_Product as r on r.Replace_id=s.Replace_id;
 
--- (select s.Scid,c.cust_name,p.Pname,p.PCategory,r.Category,p.Price,r.Reprice,s.Quantity,(p.Price-r.Reprice)*s.Quantity as Total_amount from Customer as c inner join Shopcart as s on c.cust_id=s.cust_id inner join Product as p on p.Prod_id=s.Prod_id inner join Replace_Product as r on r.Replace_id=s.Replace_id;
+	 -- display Customer who pay with Debit card
+select Order_id,cust_name as Customer_Name,Pay_Category from Customer natural join Order1
+natural join Payment where Pay_Category='Debit Card';
+	-- customer not replace the product
+select ScId,cust_name as Customer_Name from Customer natural join Shopcart where Replace_id is null;
